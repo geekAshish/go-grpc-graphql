@@ -41,3 +41,46 @@ func (c *Client) PostAccount(ctx context.Context, name string) (*Account, error)
 		Name: r.Account.Name,
 	}, nil
 }
+
+func (c *Client) GetAccount(ctx context.Context, id string) (*Account, error) {
+	r, err := c.service.GetAccount(
+		ctx,
+		&pb.GetAccountRequest{Id: id},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &Account{
+		ID: r.Account.Id,
+		Name: r.Account.Name,
+	}, nil
+}
+
+func (c *Client) GetAccounts(ctx context.Context, take uint64, skip uint64) ([]Account, error) {
+	res, err := c.service.GetAccounts(
+		ctx,
+		&pb.GetAccountsRequest{
+			Skip: skip,
+			Take: take,
+		},
+	)
+	
+	if err != nil {
+		return nil, err
+	}
+
+	accounts := []Account{}
+	for _, p := range res.Accounts {
+		accounts = append(
+			accounts,
+			Account{
+				ID:   p.Id,
+				Name: p.Name,
+			},
+		)
+	}
+
+	return accounts, nil
+}
