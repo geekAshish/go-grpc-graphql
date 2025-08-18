@@ -3,13 +3,12 @@ package account
 import (
 	"context"
 
-	"github.com/geekAshish/go-grpc-graphql-micro/account/pb/github.com/geekAshish/go-grpc-graphql-micro/account/pb"
+	pb "github.com/geekAshish/go-grpc-graphql-micro/account/pb"
 	"google.golang.org/grpc"
 )
 
-
 type Client struct {
-	conn *grpc.ClientConn
+	conn    *grpc.ClientConn
 	service pb.AccountServiceClient
 }
 
@@ -23,7 +22,7 @@ func NewClient(url string) (*Client, error) {
 }
 
 func (c *Client) Close() {
-	c.conn.Close();
+	c.conn.Close()
 }
 
 func (c *Client) PostAccount(ctx context.Context, name string) (*Account, error) {
@@ -37,7 +36,7 @@ func (c *Client) PostAccount(ctx context.Context, name string) (*Account, error)
 	}
 
 	return &Account{
-		ID: r.Account.Id,
+		ID:   r.Account.Id,
 		Name: r.Account.Name,
 	}, nil
 }
@@ -53,7 +52,7 @@ func (c *Client) GetAccount(ctx context.Context, id string) (*Account, error) {
 	}
 
 	return &Account{
-		ID: r.Account.Id,
+		ID:   r.Account.Id,
 		Name: r.Account.Name,
 	}, nil
 }
@@ -66,7 +65,7 @@ func (c *Client) GetAccounts(ctx context.Context, take uint64, skip uint64) ([]A
 			Take: take,
 		},
 	)
-	
+
 	if err != nil {
 		return nil, err
 	}

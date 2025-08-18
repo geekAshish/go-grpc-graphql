@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	_ "gihub.com/lib/pq"
+	_ "github.com/lib/pq"
 )
 
 type Repository interface {
@@ -19,7 +19,7 @@ type postgresRepository struct {
 }
 
 func NewPostgresRepository(url string) (*postgresRepository, error) {
-	db, err := sql.Open("presgres", url)
+	db, err := sql.Open("postgres", url)
 	if err != nil {
 		return nil, err
 	}
@@ -69,17 +69,19 @@ func (r *postgresRepository) ListAccounts(ctx context.Context, skip uint64, take
 
 	defer rows.Close()
 
-	accounts := []Account{}
+	var accounts []*Account
 
-	for rows.Next(){
-		a := rows.Scan(&a.ID, &a.name); err == nil {
-			accounts = append(accounts, *a)
+	for rows.Next() {
+		var a Account
+		if err := rows.Scan(&a.ID, &a.Name); err != nil {
+			return nil, err
 		}
+		accounts = append(accounts, &a)
 	}
 
-	if err = rows.Err(); err != nil {
-		return nil, err;
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
-	return accounts, nil;
+	return accounts, nil
 }
