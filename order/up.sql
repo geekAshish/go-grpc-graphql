@@ -7,3 +7,10 @@ CREATE TABLE IF NOT EXISTS orders {
     total_price MONEY NOT NULL,
 }
 
+CREATE TABLE IF NOT EXISTS order_products {
+    order_id CHAR(27) REFERENCES order (id) ON DELETE CASCADE,
+    product_id CHAR(27),
+    quantity INT NOT NULL,
+    PRIMARY KEY (product_id, order_id)
+}
+
