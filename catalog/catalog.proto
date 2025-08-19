@@ -1,6 +1,7 @@
-syntax = "proto3"
+syntax = "proto3";
 package pb;
 
+option go_package = "./";
 
 message Product {
     string id = 1;
@@ -35,7 +36,7 @@ message GetProductsRequest {
 }
 
 message GetProductsResponse {
-    repeated Product product = 1;
+    repeated Product products = 1;
 }
 
 service CatalogService {

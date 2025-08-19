@@ -8,10 +8,12 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	pb "github.com/geekAshish/go-grpc-graphql-micro/catalog/pb"
 )
 
 type grpcServer struct {
-	pb.UnimplementedAccountServiceServer
+	pb.UnimplementedCatalogServiceServer
 	service Service
 }
 
@@ -22,11 +24,11 @@ func ListenGRPC(s Service, port int) error {
 	}
 
 	serv := grpc.NewServer()
-	reflection.Register(serv)
-	pb.RegisterAccountServiceServer(serv, &grpcServer{
-		UnimplementedAccountServiceServer: pb.UnimplementedAccountServiceServer{},
+	pb.RegisterCatalogServiceServer(serv, &grpcServer{
+		UnimplementedCatalogServiceServer: pb.UnimplementedCatalogServiceServer{},
 		service:                           s,
 	})
+	reflection.Register(serv)
 	return serv.Serve(lis)
 }
 
@@ -39,10 +41,10 @@ func (s *grpcServer) PostProduct(ctx context.Context, r *pb.PostProductRequest) 
 
 	return &pb.PostProductResponse{
 		Product: &pb.Product{
-			Id: p.ID,
+			Id:          p.ID,
 			Description: p.Description,
-			Name: p.Name,
-			Price: p.Price,
+			Name:        p.Name,
+			Price:       p.Price,
 		},
 	}, nil
 }
@@ -56,16 +58,16 @@ func (s *grpcServer) GetProduct(ctx context.Context, r *pb.GetProductRequest) (*
 
 	return &pb.GetProductResponse{
 		Product: &pb.Product{
-			Id: p.ID,
+			Id:          p.ID,
 			Description: p.Description,
-			Name: p.Name,
-			Price: p.Price,
+			Name:        p.Name,
+			Price:       p.Price,
 		},
 	}, nil
 }
 
-func (s *grpcServer) GetProducts(ctx context.Context, r *pb.GetProductRequest) (*pb.GetProductResponse, error) {
-	var res []Product;
+func (s *grpcServer) GetProducts(ctx context.Context, r *pb.GetProductsRequest) (*pb.GetProductsResponse, error) {
+	var res []Product
 	var err error
 
 	if r.Query != "" {
@@ -85,18 +87,14 @@ func (s *grpcServer) GetProducts(ctx context.Context, r *pb.GetProductRequest) (
 
 	for _, p := range res {
 		products = append(products, &pb.Product{
-			ID: p.ID,
-			Name: p.Name,
+			Id:          p.ID,
+			Name:        p.Name,
 			Description: p.Description,
-			Price: p.Price,
+			Price:       p.Price,
 		})
 	}
 
 	return &pb.GetProductsResponse{
-		Products: products,
+		Product: products,
 	}, nil
 }
-
-
-
-

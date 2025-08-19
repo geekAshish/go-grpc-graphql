@@ -44,8 +44,8 @@ func (c *Client) PostProduct(ctx context.Context, name, description string, pric
 
 	return &Product{
 		ID:          r.Product.Id,
-		Name:        r.Product.name,
-		Description: r.Product.description,
+		Name:        r.Product.Name,
+		Description: r.Product.Description,
 		Price:       r.Product.Price,
 	}, nil
 }
@@ -64,8 +64,8 @@ func (c *Client) GetProduct(ctx context.Context, id string) (*Product, error) {
 
 	return &Product{
 		ID:          r.Product.Id,
-		Name:        r.Product.name,
-		Description: r.Product.description,
+		Name:        r.Product.Name,
+		Description: r.Product.Description,
 		Price:       r.Product.Price,
 	}, nil
 }
@@ -86,7 +86,7 @@ func (c *Client) GetProducts(ctx context.Context, skip, take uint64, ids []strin
 	}
 
 	products := []Product{}
-	for _, p := range r.Products {
+	for _, p := range r.Product{
 		products = append(products, Product{
 			ID:          p.Id,
 			Name:        p.Name,

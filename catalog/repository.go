@@ -40,7 +40,7 @@ func NewElasticRepository(url string) (Repository, error) {
 		return nil, err
 	}
 
-	return &elasticRepository(client), nil
+	return &elasticRepository{client}, nil
 }
 
 func (r *elasticRepository) Close() {
@@ -54,9 +54,10 @@ func (r *elasticRepository) PutProduct(ctx context.Context, p Product) error {
 			Description: p.Description,
 			Price:       p.Price,
 		},
-	)
+	).Do(ctx)
+
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	return nil
