@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	elastic "gopkg.in/olivere/elastic.v7"
+	elastic "github.com/olivere/elastic/v7"
+
 )
 
 var (
@@ -34,7 +35,7 @@ type productDocument struct {
 func NewElasticRepository(url string) (Repository, error) {
 	client, err := elastic.NewClient(
 		elastic.SetURL(url),
-		elastic.SetSnif(false),
+		elastic.SetSniff(false),
 	)
 	if err != nil {
 		return nil, err
@@ -75,7 +76,7 @@ func (r *elasticRepository) GetProductByID(ctx context.Context, id string) (*Pro
 	}
 
 	p := productDocument{}
-	if err = json.Unmarshal(*res.Source, &p); err != nil {
+	if err = json.Unmarshal(res.Source, &p); err != nil {
 		return nil, err
 	}
 
@@ -97,7 +98,7 @@ func (r *elasticRepository) ListProducts(ctx context.Context, skip uint64, take 
 	products := []Product{}
 	for _, hit := range res.Hits.Hits {
 		p := productDocument{}
-		if err = json.Unmarshal(*hit.Source, &p); err == nil {
+		if err = json.Unmarshal(hit.Source, &p); err == nil {
 			products = append(products, Product{
 				ID:          hit.Id,
 				Name:        p.Name,
@@ -125,7 +126,7 @@ func (r *elasticRepository) ListProductsWithIDs(ctx context.Context, ids []strin
 	products := []Product{}
 	for _, doc := range res.Docs {
 		p := productDocument{}
-		if err = json.Unmarshal(*doc.Source, &p); err == nil {
+		if err = json.Unmarshal(doc.Source, &p); err == nil {
 			products = append(products, Product{
 				ID:          doc.Id,
 				Name:        p.Name,
@@ -150,7 +151,7 @@ func (r *elasticRepository) SearchProducts(ctx context.Context, query string, sk
 	products := []Product{}
 	for _, hit := range res.Hits.Hits {
 		p := productDocument{}
-		if err = json.Unmarshal(*hit.Source, &p); err == nil {
+		if err = json.Unmarshal(hit.Source, &p); err == nil {
 			products = append(products, Product{
 				ID:          hit.Id,
 				Name:        p.Name,

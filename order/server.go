@@ -16,12 +16,13 @@ import (
 )
 
 type grpcServer struct {
+	pb.UnimplementedOrderServiceServer
 	service       Service
 	accountClient *account.Client
 	catalogClient *catalog.Client
 }
 
-func listenGRPC(s Service, accountURL, catalogURL string, port int) error {
+func ListenGRPC(s Service, accountURL, catalogURL string, port int) error {
 	accountClient, err := account.NewClient(accountURL)
 	if err != nil {
 		return err
@@ -42,9 +43,10 @@ func listenGRPC(s Service, accountURL, catalogURL string, port int) error {
 
 	serv := grpc.NewServer()
 	pb.RegisterOrderServiceServer(serv, &grpcServer{
-		s,
-		accountClient,
-		catalogClient,
+		UnimplementedOrderServiceServer: pb.UnimplementedOrderServiceServer{},
+		service:                         s,
+		accountClient:                   accountClient,
+		catalogClient:                   catalogClient,
 	})
 
 	reflection.Register(serv)
@@ -55,12 +57,12 @@ func (s *grpcServer) PostOrder(ctx context.Context, r *pb.PostOrderRequest) (*pb
 	_, err := s.accountClient.GetAccount(ctx, r.AccountId)
 	if err != nil {
 		log.Println("Error getting account: ", err)
-		return nil, errors.New("Account not found")
+		return nil, errors.New("account not found")
 	}
 
 	productIDS := []string{}
 
-	orderedProducts, err := s.catalog.Client.GetProducts(ctx, 0, 0, productIDS, "")
+	orderedProducts, err := s.catalogClient.GetProducts(ctx, 0, 0, productIDS, "")
 	if err != nil {
 		log.Println("Error getting products: ", err)
 		return nil, errors.New("products not found")
@@ -153,13 +155,22 @@ func (s *grpcServer) GetOrdersForAccount(ctx context.Context, r *pb.GetOrdersFor
 		for _, product := range o.Products {
 			for _, p := range products {
 				if p.ID == product.ID {
-					product.Name =        p.Name
+					product.Name = p.Name
 					product.Description = p.Description
-					product.Price =       p.Price
+					product.Price = p.Price
 					break
 				}
 			}
-			op.Products = append(op.Products, )
+			op.Products = append(op.Products, &pb.Order_OrderProduct{
+				Id:          product.ID,
+				Name:        product.Name,
+				Description: product.Description,
+				Price:       product.Price,
+				Quantity:    product.Quantity,
+			})
 		}
+		orders = append(orders, op)
 	}
+
+	return &pb.GetOrdersForAccountResponse{Orders: orders}, nil
 }

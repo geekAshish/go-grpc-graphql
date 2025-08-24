@@ -53,7 +53,7 @@ func (s *OrderService) PostOrder(ctx context.Context, accountID string, products
 		return nil, err
 	}
 
-	return  o, nil
+	return o, nil
 }
 
 func (s *OrderService) GetOrdersForAccount(ctx context.Context, accountID string) ([]Order, error) {
