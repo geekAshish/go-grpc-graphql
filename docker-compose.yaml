@@ -8,7 +8,7 @@ services:
     depends_on:
       - account_db
     environment:
-      DATABASE_URL: postgres://
+      DATABASE_URL: postgres://postgres:12345@localhost:5432/ecom?sslmode=disable"
     restart: on-failure
 
   catalog:
@@ -28,7 +28,7 @@ services:
     depends_on:
       - order_db
     environment:
-      DATABASE_URL: postgres://
+      DATABASE_URL: postgres://postgres:12345@localhost:5432/ecom?sslmode=disable"
       ACCOUNT_SERVICE_URL: account:8080
       CATALOG_SERVICE_URL: catalog:8080
     restart: on-failure
@@ -55,7 +55,7 @@ services:
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
+      POSTGRES_PASSWORD: 12345
     restart: unless-stopped
 
   catalog_db:
@@ -71,5 +71,5 @@ services:
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
+      POSTGRES_PASSWORD: 12345
     restart: unless-stopped

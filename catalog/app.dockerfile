@@ -1,10 +1,10 @@
-FROM golang:1.24.5-alpine3.18 AS build
+FROM golang:alpine AS build
 RUN apk --no-cache add gcc g++ make ca-certificates
 WORKDIR /go/src/github.com/geekAshish/go-grpc-graphql-micro
 COPY go.mod go.sum ./
-COPY vendor vendor
+# COPY vendor vendor
 COPY catalog catalog
-RUN GO111MODULE=on go build -mod vendor -o /go/bin/app ./catalog/cmd/catalog
+RUN GO111MODULE=on go build -o /go/bin/app ./catalog/cmd/catalog
 
 FROM alpine:3.11
 WORKDIR /usr/bin
